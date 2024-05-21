@@ -69,7 +69,7 @@ userRouter.post('/signin', async (c) => {
     });
 
     if (!user) {
-      c.status(401);
+      c.status(403);
       return c.json({ message: "Username doesn't exist" });
     }
 
