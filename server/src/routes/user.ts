@@ -42,7 +42,11 @@ userRouter.post('/signup', async (c) => {
       c.env.SECRET_KEY
     );
     
-    return c.text(`Signup successful; token - ${jwtToken}`);
+    return c.json({
+      msg : 'Signup successful',
+      token : jwtToken
+    });
+
   } catch (e) {
     console.error(e);  // Log the error for debugging
     c.status(500);
@@ -88,7 +92,10 @@ userRouter.post('/signin', async (c) => {
       c.env.SECRET_KEY
     );
     
-    return c.text(`Signin successful; token - ${jwtToken}`);
+    return c.json({
+      msg : 'Signin successful',
+      token : jwtToken
+    });
   } catch (e) {
     console.error(e);  // Log the error for debugging
     c.status(500);

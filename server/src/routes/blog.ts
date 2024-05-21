@@ -15,19 +15,23 @@ const blogRouter = new Hono<{
 
 blogRouter.use('/*', async (c, next) => {
   const authHeader = c.req.header('authorization') || "";
-  console.log("Authorization Header:", authHeader);
-  const user  = await verify(authHeader, c.env.SECRET_KEY);
-  console.log("Verified User:", user);
-  if (user) {
-    c.set("userId", user.userId as string); ;
-    await next();
-  }else{
+  try {
+    const user  = await verify(authHeader, c.env.SECRET_KEY);
+    if (user) {
+      c.set("userId", user.userId as string); ;
+      await next();
+    }else{
+      c.status(403);
+      return c.json ({
+        message : 'you are not logged in'
+      })
+    }
+  }catch(e){
     c.status(403);
-    return c.json ({
-      message : 'you are not logged in'
-    })
+      return c.json ({
+        message : 'you are not logged in'
+      })
   }
-
 })
 
 
@@ -43,7 +47,6 @@ blogRouter.post('/', async (c) => {
 
     const body = await c.req.json();
     const authorId = c.get("userId")
-    console.log("Retrieved authorId:", authorId);
 
     try {
     const blog = await prisma.blog.create({
@@ -117,7 +120,6 @@ blogRouter.get('/:id', async (c) => {
     }).$extends(withAccelerate());
 
     try{
-
         const blog = await prisma.blog.findFirst({
             where: {
                 id : Number(id)
@@ -136,8 +138,8 @@ blogRouter.get('/:id', async (c) => {
 });
 
 
-blogRouter.delete('/', async (c) => {
-    const body = await c.req.json();
+blogRouter.delete('/:id', async (c) => {
+    const id = c.req.param("id");
     const prisma = new PrismaClient({
       datasources: {
         db: {
@@ -148,7 +150,7 @@ blogRouter.delete('/', async (c) => {
     try{
         const blog = await prisma.blog.delete({
             where: {
-                id: body.id,
+              id : Number(id)
             }
         });
         return c.json({
