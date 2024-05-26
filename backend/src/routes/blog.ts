@@ -57,6 +57,7 @@ blogRouter.post('/', async (c) => {
     try {
     const blog = await prisma.blog.create({
       data: {
+        topic: body.topic,
         title: body.title,
         content: body.content,
         authorId: Number(authorId)
@@ -95,6 +96,7 @@ blogRouter.put('/', async (c) => {
             authorId : Number(authorId)
         },
         data : {
+            topic: body.topic,
             title : body.title,
             content : body.content,
         }
@@ -151,6 +153,7 @@ blogRouter.get('/:id', async (c) => {
 
 
 blogRouter.delete('/:id', async (c) => {
+    const body = await c.req.json();
     const id = c.req.param("id");
     const prisma = new PrismaClient({
       datasources: {
@@ -160,6 +163,12 @@ blogRouter.delete('/:id', async (c) => {
       },
     }).$extends(withAccelerate());
     try{
+        const userCheck = c.get('userId');
+        if (body.userId !== userCheck){
+          c.status(403);
+          return c.json({msg : 'unauthorized access'});
+        }
+
         const blog = await prisma.blog.delete({
             where: {
               id : Number(id)
@@ -175,5 +184,122 @@ blogRouter.delete('/:id', async (c) => {
     }
 
 });
+blogRouter.post('/comment', async (c) => {
+  const prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: c.env.DATABASE_URL,
+      },
+    },
+  }).$extends(withAccelerate());
 
- export default blogRouter;
+    const body = await c.req.json();
+    const userId = c.get("userId")
+
+    try {
+    const comment = await prisma.comment.create({
+      data: {
+        comment: body.comment,
+        userId: Number(userId),
+        blogId: Number(body.blogId)
+      }
+    });
+    return c.json({
+      comment,
+    });
+  } catch (error) {
+    console.error('Error while posting comment', error);
+    return c.json({
+      message: 'Error while posting comment'
+    }, 500);
+  } 
+});
+
+blogRouter.delete('/comment/:id', async (c) => {
+  const body = await c.req.json();
+  const id = c.req.param("id");
+  const prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: c.env.DATABASE_URL,
+      },
+    },
+  }).$extends(withAccelerate());
+  try{
+      const userCheck = c.get('userId');
+      if (body.userId !== userCheck){
+        c.status(403);
+        return c.json({msg : 'unauthorized access'});
+      }
+
+      const comment = await prisma.comment.delete({
+          where: {
+            id : Number(id)
+          }
+      });
+      return c.json({
+          id : comment.id,
+          msg : 'comment deleted successfully'
+      })
+  } catch(e){
+      c.status(500)
+      return c.json({ msg: 'Internal server error' });
+  }
+
+});
+blogRouter.post('/bookmark/:id', async (c) => {
+  const prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: c.env.DATABASE_URL,
+      },
+    },
+  }).$extends(withAccelerate());
+
+    const userId = c.get("userId")
+    const id = c.req.param("id");
+    try {
+    const bookmark = await prisma.bookmark.create({
+      data: {
+        userId: Number(userId),
+        blogId: Number(id)
+      }
+    });
+    return c.json({
+      bookmark,
+    });
+  } catch (error) {
+    console.error('Error while saving the blog', error);
+    return c.json({
+      message: 'Error while saving the blog'
+    }, 500);
+  } 
+});
+
+blogRouter.delete('/bookmark/:id', async (c) => {
+  const id = c.req.param("id");
+  const prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: c.env.DATABASE_URL,
+      },
+    },
+  }).$extends(withAccelerate());
+  try{
+      const bookmark = await prisma.bookmark.delete({
+          where: {
+            id : Number(id)
+          }
+      });
+      return c.json({
+          id : bookmark.id,
+          msg : 'blog unsaved'
+      })
+  } catch(e){
+      c.status(500)
+      return c.json({ msg: 'Internal server error' });
+  }
+
+});
+
+export default blogRouter;

@@ -13,6 +13,9 @@ model User {
   username String @unique
   password String
   blogs Blog[]
+  topics   Topic[]    @relation("UserTopics")
+  bookmark Bookmark[]
+  comments Comment[]
 }
 
 model Blog {
@@ -22,4 +25,38 @@ model Blog {
   content String
   published Boolean @default(false)
   author User @relation(fields: [authorId], references: [id])
+  topic Topic [] @relation("PostTopics")
+  bookmark Bookmark[]
+  comment Comment []
+}
+
+model Comment {
+  id Int @id @default (autoincrement())
+  comment String
+  blogId Int
+  userId Int
+  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Bookmark {
+  id     Int    @id @default(autoincrement())
+  userId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blogId Int
+  blog   Blog   @relation(fields: [blogId], references: [id], onDelete: Cascade)
+}
+
+model MainTopic {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  topics Topic[]
+}
+model Topic {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  mainTopicId Int?
+  mainTopic   MainTopic? @relation(fields: [mainTopicId], references: [id])
+  blogs       Blog[]     @relation("PostTopics")
+  users       User[]     @relation("UserTopics")
 }
