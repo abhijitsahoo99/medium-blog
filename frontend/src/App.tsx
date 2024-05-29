@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import Appbar from './components/Appbar'
 import Footer from './components/Footer'
+import Signup from './pages/Signup'
+import Signin from './pages/Signin'
 
 function App() {
 
@@ -12,6 +14,8 @@ function App() {
       <Appbar />
         <Routes>
           <Route path='/' element={<LandingPage />}></Route>
+          <Route path='/signup' element={<Signup />}></Route>
+          <Route path='/signin' element={<Signin />}></Route>
         </Routes>
         <Footer />
       </BrowserRouter>
