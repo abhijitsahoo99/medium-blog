@@ -1,4 +1,5 @@
 import LandingImage from '../assets/landing_page.png'
+import Footer from '../components/Footer';
 function LandingPage() {
 
   return (
@@ -19,8 +20,8 @@ function LandingPage() {
           </button>
         </div>
           <img className='absolute h-screen w-1/2 -z-10 right-0 top-3' src={LandingImage} alt="landing-page" />
-
       </div>
+      <Footer  />
     </>
   )
 }
