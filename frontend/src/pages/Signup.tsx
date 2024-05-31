@@ -2,24 +2,42 @@ import React, { useState } from 'react';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
+import { storeUserData } from '../handlers/authHandler';
+import Loading from '../components/Loading';
 
 const Signup : React.FC = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>)  => {
-    navigate('/dashboard')
+
+  const signupHandler = async (e:any) => {
+    setLoading(true);
+    try {
+      e.preventDefault();
+      const user = await storeUserData(email, password, username);
+      if(!user) throw Error;
+      navigate('/home')
+    } catch (error) {
+      console.error("Error while signing up.")
+    } finally {
+      setLoading(false)
+    }
+
+  };
+
+  const signInCLick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    navigate('/signin')
   }
+
+  if(loading) return <Loading />
 
   return (
     <div className='h-screen flex flex-col justify-center items-center'>
         <div className='text-3xl font-black py-2'>
-            Create an account
-        </div>
-        <div className='text-sm font-medium py-1'>
-            <p>Already have an aqccount? Log in</p>
+            Join Medium
         </div>
         <div className='pt-4'>
         <div className='py-2'>
@@ -51,7 +69,11 @@ const Signup : React.FC = () => {
         </div>
         </div>
         <div className='py-2'>
-            <Button label="Sign up" onClick={handleClick}/>
+            <Button label="Sign up" onClick={signupHandler}/>
+        </div>
+
+        <div className='text-sm font-medium py-1'>
+            <p>Already have an account? <span className='text-base font-bold text-black cursor-pointer' onClick={signInCLick}>Log in</span></p>
         </div>
 
     </div>
