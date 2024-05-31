@@ -41,17 +41,8 @@ userRouter.post('/signup', async (c) => {
     });
 
     // Sign a JWT token
-    const jwtToken = await sign(
-      {
-        userId: user.id,
-      },
-      c.env.SECRET_KEY
-    );
-    
-    return c.json({
-      msg : 'Signup successful',
-      token : jwtToken
-    });
+    const jwtToken = await sign({userId: user.id,},c.env.SECRET_KEY);
+    return c.json({jwtToken, user: user})
 
   } catch (e) {
     console.error(e);  // Log the error for debugging
@@ -97,17 +88,8 @@ userRouter.post('/signin', async (c) => {
     }
 
     // Sign a JWT token
-    const jwtToken = await sign(
-      {
-        userId: user.id,
-      },
-      c.env.SECRET_KEY
-    );
-    
-    return c.json({
-      msg : 'Signin successful',
-      token : jwtToken
-    });
+    const jwtToken = await sign({userId: user.id,},c.env.SECRET_KEY);
+    return c.json({jwtToken, user: user})
   } catch (e) {
     console.error(e);  // Log the error for debugging
     c.status(500);
