@@ -1,21 +1,20 @@
 import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import LandingPage from './pages/LandingPage'
+import Landing from './pages/LandingPage'
 import Appbar from './components/Appbar'
-import Signup from './pages/Signup'
-import Signin from './pages/Signin'
 import Home from './pages/Home'
+import { useState } from 'react'
 
 function App() {
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [showSignUp, setShowSignUp] = useState(false);
 
   return (
     <>
       <BrowserRouter>
-      <Appbar />
+      <Appbar setShowSignUp={setShowSignUp} setShowSignIn={setShowSignIn}  />
         <Routes>
-          <Route path='/' element={<LandingPage />}></Route>
-          <Route path='/signup' element={<Signup />}></Route>
-          <Route path='/signin' element={<Signin />}></Route>
+          <Route path='/' element={<Landing showSignIn={showSignIn} showSignUp={showSignUp} setShowSignUp={setShowSignUp} setShowSignIn={setShowSignIn} /> }></Route>
           <Route path='/home' element={<Home />}></Route>
         </Routes>
       </BrowserRouter>

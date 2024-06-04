@@ -1,10 +1,22 @@
 import LandingImage from '../assets/landing_page.png'
 import Footer from '../components/Footer';
-function LandingPage() {
+import Signup from './Signup';
+import Signin from './Signin';
+
+interface landingPageType {
+  showSignIn : boolean;
+  showSignUp: boolean;
+  setShowSignUp: Function;
+  setShowSignIn: Function;
+  setAuthenticated?: Function;
+}
+function LandingPage({showSignIn, showSignUp, setShowSignIn, setShowSignUp}: landingPageType) {
 
   return (
     <>
       <div className="flex items-center h-[83vh] w-screen">
+      {showSignUp && !showSignIn && <Signup setShowSignUp={setShowSignUp} setShowSignIn={setShowSignIn} />}
+      {!showSignUp && showSignIn && <Signin setShowSignIn={setShowSignIn} setShowSignUp={setShowSignUp} />}
         <div className="flex flex-col pl-32">
           <p className="text-7xl font-black text-bold ">
             Human 
